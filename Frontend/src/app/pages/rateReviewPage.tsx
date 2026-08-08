@@ -137,7 +137,7 @@ export default function RateAppScreen() {
           <View className="relative w-full h-52">
             <View className="">
               <Text className="text-white text-2xl font-bold pt-5">
-                Enjoying MovieFlix?
+                Enjoying CineVerse?
               </Text>
               <Text className="text-accent text-2xl font-bold">
                 We'd love your review!

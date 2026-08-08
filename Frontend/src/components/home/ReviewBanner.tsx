@@ -49,7 +49,7 @@ const ReviewBanner = () => {
             <Text className="text-[24px] font-bold text-white">Enjoying</Text>
 
             <Text className="text-[24px] font-bold text-[#AB8BFF]">
-              MovieFlix?
+              CineVerse?
             </Text>
 
             <Text
