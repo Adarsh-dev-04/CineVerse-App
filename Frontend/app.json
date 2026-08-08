@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "CineVerse",
+    "slug": "cineverse",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon_idea2.png",
+    "scheme": "movieapp",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "icon": "./assets/icon_idea2.pngn"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#030014",
+        "foregroundImage": "./assets/splashScreen.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.anonymous.CineVerse"
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/logo.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#030014",
+          "image": "./assets/splashScreen.png",
+          "imageWidth": 100
+        }
+      ],
+      "expo-secure-store",
+      "expo-image",
+      "expo-web-browser"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "381382a6-ab34-459a-9d3b-4d49d490948d"
+      }
+    },
+    "owner": "adarsh-dev-04s-team"
+  }
+}
