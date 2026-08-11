@@ -15,6 +15,8 @@ import {
   TouchableWithoutFeedback,
   View,
   Dimensions,
+  Pressable,
+  BackHandler,
 } from "react-native";
 import YoutubePlayer from "react-native-youtube-iframe";
 import { icons } from "../../../constants/icons";
@@ -39,6 +41,7 @@ import useAuth from "@/hooks/useAuth";
 import { images } from "../../../constants/images";
 import { useBottomSheet } from "@/contexts/BottomSheetContext";
 import { useMovieInteraction } from "@/contexts/MovieInteractionContext";
+import { genres } from "@/constants/discoverData";
 
 const moviesDetail = () => {
   const { id } = useLocalSearchParams();
@@ -154,6 +157,16 @@ const moviesDetail = () => {
 
   const activeMovieId = movie?.id ?? tmdbId;
 
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        router.back();
+        return true;
+      },
+    );
+    return () => subscription.remove();
+  }, []);
 
   return (
     <View className="flex-1 bg-primary">
@@ -198,10 +211,11 @@ const moviesDetail = () => {
                 <TouchableOpacity
                   className="bg-black/50 rounded-full px-2 py-2"
                   onPress={() =>
-                    user?
-                    (movie && !Number.isNaN(activeMovieId)
-                      ? toggleInteraction(movie, "favorite")
-                      : undefined):showLoginSheet('favorite','heart')
+                    user
+                      ? movie && !Number.isNaN(activeMovieId)
+                        ? toggleInteraction(movie, "favorite")
+                        : undefined
+                      : showLoginSheet("favorite", "heart")
                   }
                 >
                   <IonicIcons
@@ -224,14 +238,19 @@ const moviesDetail = () => {
                 <TouchableOpacity
                   className={`${interaction.watched ? "bg-[#22C55E]" : "bg-black/50"} rounded-full px-2 py-2`}
                   onPress={() =>
-                    user?
-                    (movie && !Number.isNaN(activeMovieId)
-                      ? toggleInteraction(movie, "watched")
-                      : undefined): showLoginSheet("watched",'bookmark')
+                    user
+                      ? movie && !Number.isNaN(activeMovieId)
+                        ? toggleInteraction(movie, "watched")
+                        : undefined
+                      : showLoginSheet("watched", "bookmark")
                   }
                 >
                   <IonicIcons
-                    name={interaction.watched ? "checkmark-done-circle" : "checkmark-done"}
+                    name={
+                      interaction.watched
+                        ? "checkmark-done-circle"
+                        : "checkmark-done"
+                    }
                     size={25}
                     color={"#FFFFFF"}
                   />
@@ -300,16 +319,24 @@ const moviesDetail = () => {
               {/* Genres Section */}
               <View className="absolute -bottom-60 right-0 overflow-hidden w-[180]">
                 <View className="flex-row flex-wrap gap-3">
-                  {movie.genres.map((genre: { name: string }) => {
+                  {movie.genres.map((genre: { name: string; id: number }) => {
                     return (
-                      <View
+                      <Pressable
                         className="bg-slate-500/10 px-2 py-1 rounded-full border border-slate-200/20"
                         key={genre.name}
+                        onPress={() => {
+                          router.push({
+                            pathname: "/(tabs)/explore",
+                            params: {
+                              genreId: genre.id,
+                            },
+                          });
+                        }}
                       >
                         <Text className="text-gray-300 text-base">
                           {genre.name}
                         </Text>
-                      </View>
+                      </Pressable>
                     );
                   })}
                 </View>
@@ -341,10 +368,11 @@ const moviesDetail = () => {
               <TouchableOpacity
                 className="flex-row items-center justify-center gap-2 py-3 rounded-xl ml-5 bg-slate-500/10 border border-gray-500/70 w-1/2"
                 onPress={() =>
-                  user?
-                  (movie && !Number.isNaN(activeMovieId)
-                    ? toggleInteraction(movie, "watchlist")
-                    : undefined):showLoginSheet('watchlist','bookmark')
+                  user
+                    ? movie && !Number.isNaN(activeMovieId)
+                      ? toggleInteraction(movie, "watchlist")
+                      : undefined
+                    : showLoginSheet("watchlist", "bookmark")
                 }
               >
                 <Text className="text-white text-base font-semibold mr-2">

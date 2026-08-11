@@ -31,7 +31,7 @@ const CollectionCard = ({
     <Link href={`/movie-interaction/${pageType}` as RelativePathString} asChild>
 
       <Pressable className="mb-5 rounded-3xl border border-gray-700/60 bg-[#090615] py-4 px-3 active:opacity-80 flex-row items-center justify-center"
-      >
+       onPress={()=>{}}>
 
         <View className="flex-col gap-4 items-center justify-center w-full">
           <View className="flex-row justify-start items-center w-full gap-4">

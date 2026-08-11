@@ -20,7 +20,7 @@ const Slide = ({ item }: { item: any }) => {
               uri: `https://image.tmdb.org/t/p/w780${item.backdrop_path}`,
             }}
             resizeMode="cover"
-            className="flex-1 justify-end aspect-[16/10] sm:aspect-[16/9]"
+            className="flex justify-end aspect-[16/10] sm:aspect-[16/9]"
           >
             <View className="absolute inset-0 bg-black/40" />
 

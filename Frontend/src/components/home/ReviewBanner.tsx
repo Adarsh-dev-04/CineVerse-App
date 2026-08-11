@@ -5,10 +5,9 @@ import { Link, router } from "expo-router";
 
 const ReviewBanner = () => {
   return (
-    <Link href={"/pages/rateReviewPage"} asChild>
       <Pressable
         className="mt-8 overflow-hidden rounded-[28px] border  border-[#241C40] bg-[#090615] active:scale-[0.98] active:opacity-95"
-        //   onPress={() => router.push("/pages/rateReviewPage")}
+          onPress={() => router.push("/pages/rateReviewPage")}
       >
         {/* Background Glow */}
 
@@ -97,7 +96,7 @@ const ReviewBanner = () => {
           <Ionicons name="arrow-forward" size={22} color="#AB8BFF" />
         </Pressable>
       </Pressable>
-    </Link>
+
   );
 };
 

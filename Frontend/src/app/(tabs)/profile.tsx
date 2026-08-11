@@ -107,7 +107,7 @@ const profile = () => {
 
               <TouchableOpacity
                 className="w-full h-16 bg-accent rounded-xl mt-4 items-center justify-center overflow-hidden"
-                onPress={() => handleLogout}
+                onPress={handleLogout}
               >
                 <ImageBackground
                   source={images.highlight}

@@ -19,38 +19,47 @@ import {
 import MovieCard from "@/components/common/MovieCard";
 import Slide from "@/components/home/Slide";
 import { fetchTopRatedMovies } from "../../../services/api";
-import { useEffect, useState, useRef, ReactEventHandler } from "react";
+import { useEffect, useState, useRef} from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import { getToken } from "@/utils/tokenStorage";
 import { useAuth } from "@/contexts/AuthContext";
 import ReviewBanner from "@/components/home/ReviewBanner";
 export default function Index() {
-  const { user, setToken } = useAuth();
+  const { setToken } = useAuth();
   const insets = useSafeAreaInsets();
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const router = useRouter();
+
+
   const {
     data: movies,
     loading: moviesLoading,
     error: moviesError,
     refetch,
-  } = useFetch(() => fetchMovies({ query: "" }), true);
+  } = useFetch(() => fetchMovies({ query: "", page: 1 }), true);
+
   const {
     data: nowplayingMovies,
     loading: nowplayingLoading,
     error: nowplayingError,
   } = useFetch(() => fetchNowPlayingMovies(), true);
+
+
   const {
     data: topRated,
     loading: topRatedLoading,
     error: topRatedError,
   } = useFetch(() => fetchTopRatedMovies(), true);
+
+
   const {
     data: UpcomingMoviesData,
     loading: UpcomingLoading,
     error: UpcomingError,
   } = useFetch(() => UpcomingMovies(), true);
+
 
   useEffect(() => {
     let mounted = true;
@@ -70,10 +79,18 @@ export default function Index() {
   const Error =
     moviesError || nowplayingError || topRatedError || UpcomingError;
 
+  const heroMovies = nowplayingMovies?.slice(0, 5) ?? [];
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev: number) => {
-        const next = (prev + 1) % 5;
+        const totalItems = heroMovies.length;
+
+        if (totalItems === 0) {
+          return prev;
+        }
+
+        const next = (prev + 1) % totalItems;
         heroRef.current?.scrollToIndex({ index: next, animated: true });
         return next;
       });
@@ -82,8 +99,7 @@ export default function Index() {
     return () => {
       clearInterval(interval);
     };
-  }, []);
-
+  }, [heroMovies.length]);
   return (
     <View className="flex-1 bg-primary">
       <BlurView
@@ -116,9 +132,7 @@ export default function Index() {
             className="aspect-square size-16"
             resizeMode="contain"
           />
-          <Text className="text-white text-4xl font-semibold">
-            CineVerse
-          </Text>
+          <Text className="text-white text-4xl font-semibold">CineVerse</Text>
         </View>
 
         {Loading ? (
@@ -130,8 +144,8 @@ export default function Index() {
         ) : Error ? (
           <Text className="text-white text-center mt-10">{Error?.message}</Text>
         ) : (
-          <View className="flex-1">
-            <View className="px-5 mb-5">
+          <View className="flex">
+            <View className="mb-5">
               <SearchBar
                 onPress={() => router.push("/search")}
                 placeholder="Search for movies..."
@@ -139,15 +153,14 @@ export default function Index() {
             </View>
 
             <FlatList
-              data={nowplayingMovies?.slice(0, 5)}
+              data={heroMovies}
               ref={heroRef}
               horizontal
               pagingEnabled
               showsHorizontalScrollIndicator={false}
+              className="mb-8"
               keyExtractor={(item) => item.id.toString()}
-              className="relative mb-8"
               renderItem={({ item }) => <Slide item={item} />}
-              ListFooterComponent={<></>}
               bounces={false}
             />
 
@@ -156,7 +169,7 @@ export default function Index() {
                 Popular Movies
               </Text>
               <FlatList
-                data={movies}
+                data={movies.results}
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 bounces={false}

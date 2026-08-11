@@ -49,8 +49,7 @@ const _layout = () => {
             height: 52,
             position: "absolute",
             overflow: "hidden",
-            borderColor: "transparent",
-            
+            borderColor: "transparent",  
         }
         }}>
       <Tabs.Screen

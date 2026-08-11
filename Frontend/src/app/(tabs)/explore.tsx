@@ -1,30 +1,38 @@
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import {
   ActivityIndicator,
   FlatList,
+  Image,
   Pressable,
   ScrollView,
   Text,
   View,
+  Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { BackHandler } from "react-native";
 
 import ExploreChip from "@/components/explore/ExploreChip";
 import GenreCard from "@/components/explore/GenreCard";
 import MoviePosterCard from "@/components/explore/MoviePosterCard";
 import SectionHeader from "@/components/explore/SectionHeader";
 
-import { genres } from "@/constants/discoverData";
+import { Genre, genres } from "@/constants/discoverData";
 import useFetch from "../../../services/useFetch";
 import {
   fetchTrendingMovies,
   fetchTopRatedMovies,
 } from "../../../services/api";
 import MovieCard from "@/components/common/MovieCard";
-import { setParams } from "expo-router/build/react-navigation/routers/CommonActions";
+import { useEffect, useState } from "react";
+import GenrePage from "@/components/common/GenrePage";
+import { images } from "../../../constants/images";
 
 const Discover = () => {
+  const { genreId } = useLocalSearchParams();
+  const genreIdNum = Number(genreId);
+  const { width } = Dimensions.get("window");
   const {
     data: trendingMovies,
     loading: trendingLoading,
@@ -35,10 +43,40 @@ const Discover = () => {
     loading: topRatedLoading,
     error: topRatedError,
   } = useFetch(() => fetchTopRatedMovies(), true);
-  const Error = trendingError;
-  const Loading = trendingLoading;
+
+  const [showGenre, setShowGenre] = useState(genreId?true:false);
+  const [genre, setGenre] = useState<number | undefined>(genreIdNum || 0);
+  const Error = trendingError || topRatedError;
+  const Loading = trendingLoading || topRatedLoading;
+
+  useEffect(() => {
+    if (!showGenre) {
+      setGenre(undefined);
+      return;
+    }
+
+    const subscription = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        setShowGenre(false);
+        setGenre(undefined);
+        return true;
+      },
+    );
+
+    return () => subscription.remove();
+  }, [showGenre]);
+  useEffect(() => {
+    setShowGenre(true);
+  }, [genre]);
+
   return (
     <SafeAreaView edges={["top"]} className="flex-1 bg-[#030014]">
+      <Image
+        source={images.bg}
+        className="absolute top-0 w-full h-auto"
+        resizeMode="cover"
+      />
       {Loading ? (
         <ActivityIndicator
           size="large"
@@ -47,6 +85,8 @@ const Discover = () => {
         />
       ) : Error ? (
         <Text className="text-white text-center mt-10">{Error?.message}</Text>
+      ) : showGenre && genre ? (
+        <GenrePage genreId={genre} setShowGenre={setShowGenre} />
       ) : (
         <ScrollView
           className="flex-1 mb-20"
@@ -112,6 +152,7 @@ const Discover = () => {
 
             <FlatList
               horizontal
+              initialNumToRender={9}
               data={trendingMovies}
               keyExtractor={(item) => item.id.toString()}
               showsHorizontalScrollIndicator={false}
@@ -135,14 +176,7 @@ const Discover = () => {
                   key={genre.id}
                   genre={genre}
                   onPress={() => {
-                    router.push({
-                      pathname: `/genres/${genre.id}` as any,
-                      params: {
-                        genreName: genre.name,
-                        genreIcon: genre.icon,
-                        genreSubtitle: genre.subtitle,
-                      },
-                    });
+                    setGenre(genre.id);
                   }}
                 />
               ))}

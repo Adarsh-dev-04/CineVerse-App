@@ -16,20 +16,24 @@ import { saveToken } from "@/utils/tokenStorage";
 import { Alert } from "react-native";
 import { useAuth } from "@/contexts/AuthContext";
 import { ScrollView } from "react-native-gesture-handler";
+import PasswordInput from "./PasswordInput";
+import EmailInput from "./EmailInput";
+import InputBox from "./EmailInput";
 
 type props = {
   mode: string | string[];
   setMode: any;
   email: string;
-  setEmail:any;
+  setEmail: any;
   name: string;
-  setName:any;
+  setName: any;
 };
 
 const Login = ({ mode, setMode, email, setEmail, name, setName }: props) => {
-    const{login}=useAuth();
+  const { login } = useAuth();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [passwordDiffer, setPasswordDiffer] = useState(false);
   async function handleLogin() {
     try {
@@ -99,12 +103,12 @@ const Login = ({ mode, setMode, email, setEmail, name, setName }: props) => {
             />
 
             <View className="flex-row items-center justify-center gap-2 mt-20">
-            <Image
-              source={icons.logo}
-              className="size-16"
-              resizeMode="contain"
-            />
-          </View>
+              <Image
+                source={icons.logo}
+                className="size-16"
+                resizeMode="contain"
+              />
+            </View>
             <View className="px-5 mt-16">
               <Text className="font-semibold text-2xl text-white text-left">
                 Welcome Back !
@@ -119,25 +123,22 @@ const Login = ({ mode, setMode, email, setEmail, name, setName }: props) => {
                 Email
               </Text>
 
-              <TextInput
+              <InputBox
                 placeholder="Enter your email"
+                type="email"
                 value={email}
                 onChangeText={setEmail}
-                placeholderTextColor="#9ca3af"
-                className="w-full h-16 bg-[#0e1035] border border-gray-400/30 rounded-lg px-4 mt-2 text-white"
               />
 
               <Text className="text-white/90 text-base mt-8 text-left">
                 Password
               </Text>
 
-              <TextInput
+              <PasswordInput
                 placeholder="Enter your password"
                 value={password}
                 onChangeText={setPassword}
-                placeholderTextColor="#9ca3af"
-                className="w-full h-16 bg-[#0e1035] border border-gray-400/30 rounded-lg px-4 mt-2 text-white"
-                secureTextEntry
+                error={passwordError}
               />
               <Text className="text-accent mt-4 text-right">
                 Forgot Password?
@@ -216,50 +217,44 @@ const Login = ({ mode, setMode, email, setEmail, name, setName }: props) => {
                     Full Name
                   </Text>
 
-                  <TextInput
-                    placeholder="Enter your full name"
+                  <InputBox
+                    placeholder="Enter your name"
+                    type={'name'}
                     value={name}
                     onChangeText={setName}
-                    placeholderTextColor="#9ca3af"
-                    className="w-full h-16 bg-[#0e1035] border border-gray-400/30 rounded-lg px-4 mt-2 text-white"
                   />
 
                   <Text className="text-white/90 text-base mt-8 text-left">
                     Email
                   </Text>
 
-                  <TextInput
+                  <InputBox
                     placeholder="Enter your email"
+                    type='email'
                     value={email}
                     onChangeText={setEmail}
-                    placeholderTextColor="#9ca3af"
-                    className="w-full h-16 bg-[#0e1035] border border-gray-400/30 rounded-lg px-4 mt-2 text-white"
                   />
 
                   <Text className="text-white/90 text-base mt-8 text-left">
                     Password
                   </Text>
 
-                  <TextInput
+                  <PasswordInput
                     placeholder="Enter your password"
                     value={password}
                     onChangeText={setPassword}
-                    placeholderTextColor="#9ca3af"
-                    className="w-full h-16 bg-[#0e1035] border border-gray-400/30 rounded-lg px-4 mt-2 text-white"
-                    secureTextEntry
+                    error={passwordError}
                   />
 
                   <Text className="text-white/90 text-base mt-8 text-left">
                     Confirm Password
                   </Text>
 
-                  <TextInput
-                    placeholder="Enter your password"
-                    placeholderTextColor="#9ca3af"
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    className="w-full h-16 bg-[#0e1035] border border-gray-400/30 rounded-lg px-4 mt-2 text-white"
-                    secureTextEntry
+                  <PasswordInput
+                    placeholder="Confirm your password"
+                    value={password}
+                    onChangeText={setPassword}
+                    error={passwordError}
                   />
                   {passwordDiffer ? (
                     <Text className="text-red-500 text-sm mt-2">

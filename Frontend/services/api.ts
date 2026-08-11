@@ -8,12 +8,78 @@ const TMDB_CONFIG = {
   },
 };
 
-export const fetchMovies = async ({ query }: { query: string }) => {
-  const endpoint = query
-    ? `${TMDB_CONFIG.BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
-    : `${TMDB_CONFIG.BASE_URL}/discover/movie?sort_by=popularity.desc`;
+export const fetchMovies = async ({
+  query,
+  sort_by = "popularity.desc",
+  page = 1,
+  genreId,
+  year,
+  rating,
+  language,
+}: {
+  query: string;
+  sort_by?: string;
+  page?: number;
+  genreId?: number | null;
+  year?: number | null;
+  rating?: number | null;
+  language?: string | null;
+}) => {
+  let endpoint: string;
+
+  // =========================
+  // SEARCH
+  // =========================
+
+  if (query.trim()) {
+    const params = new URLSearchParams({
+      query: query.trim(),
+      page: page.toString(),
+    });
+    params.append("include_adult","false");
+
+    endpoint = `${TMDB_CONFIG.BASE_URL}/search/movie?${params}`;
+  }
+
+  // =========================
+  // DISCOVER / FILTER
+  // =========================
+  else {
+    const params = new URLSearchParams({
+      sort_by,
+      page: page.toString(),
+    });
+
+    // Genre
+    if (genreId) {
+      params.append("with_genres", genreId.toString());
+    }
+
+    // Release year
+    if (year) {
+      params.append("primary_release_year", year.toString());
+    }
+
+    // Minimum rating
+    if (rating) {
+      params.append("vote_average.gte", rating.toString());
+    }
+    params.append("include_adult","false");
+
+    // Language
+    if (language) {
+      params.append("with_original_language", language);
+    }
+
+    endpoint = `${TMDB_CONFIG.BASE_URL}/discover/movie?${params}`;
+  }
+
+  // =========================
+  // API REQUEST
+  // =========================
 
   const response = await fetch(endpoint, {
+    method: "GET",
     headers: TMDB_CONFIG.headers,
   });
 
@@ -23,24 +89,38 @@ export const fetchMovies = async ({ query }: { query: string }) => {
 
   const data = await response.json();
 
-  if (!query) return data.results;
+  // =========================
+  // SEARCH RESULT RANKING
+  // =========================
 
-  const q = query.toLowerCase();
+  if (query.trim()) {
+    const q = query.trim().toLowerCase();
 
-  return [...data.results].sort((a, b) => {
-    const aExact = a.title?.toLowerCase() === q;
-    const bExact = b.title?.toLowerCase() === q;
+    return {
+      ...data,
 
-    if (aExact !== bExact) {
-      return bExact ? 1 : -1;
-    }
+      results: [...data.results].sort((a, b) => {
+        const aExact = a.title?.toLowerCase() === q;
 
-    if (b.popularity !== a.popularity) {
-      return b.popularity - a.popularity;
-    }
+        const bExact = b.title?.toLowerCase() === q;
 
-    return b.vote_count - a.vote_count;
-  });
+        // Exact title first
+        if (aExact !== bExact) {
+          return bExact ? 1 : -1;
+        }
+
+        // Popularity
+        if (b.popularity !== a.popularity) {
+          return b.popularity - a.popularity;
+        }
+
+        // Vote count
+        return b.vote_count - a.vote_count;
+      }),
+    };
+  }
+
+  return data;
 };
 
 export const fetchMovieDetails = async ({ movieId }: { movieId: string }) => {
@@ -231,18 +311,47 @@ function isAfterToday(releaseDate: any) {
   return r.getTime() > today.getTime();
 }
 
-export const fetchGenreMovies = async ({ id, page=1 }: { id: number, page:number }) => {
+export const fetchGenreMovies = async ({
+  id,
+  page = 1,
+  sort_by,
+  language,
+  year,
+  rating,
+}: {
+  id: number;
+  page: number;
+  sort_by: string;
+  language: string | null;
+  year: number | null;
+  rating: number | null;
+}) => {
   const params = new URLSearchParams({
     with_genres: id.toString(),
-    sort_by: "popularity.desc",
+    sort_by: sort_by,
     page: page.toString(),
-    language: "en-US",
   });
+
+
+  // Release year
+  if (year) {
+    params.append("primary_release_year", year.toString());
+  }
+
+  // Minimum rating
+  if (rating) {
+    params.append("vote_average.gte", rating.toString());
+  }
+
+  // Language
+  if (language) {
+    params.append("with_original_language", language);
+  }
   const response = await fetch(
     `https://api.themoviedb.org/3/discover/movie?${params}`,
     {
-      method:'GET',
-      headers: TMDB_CONFIG.headers
+      method: "GET",
+      headers: TMDB_CONFIG.headers,
     },
   );
 
@@ -253,10 +362,10 @@ export const fetchGenreMovies = async ({ id, page=1 }: { id: number, page:number
   }
 
   const data = await response.json();
-  return data.results;
+  return data;
 };
 
-export async function getMoviesByGenre(genreId : number, page = 1) {
+export async function getMoviesByGenre(genreId: number, page = 1) {
   const params = new URLSearchParams({
     with_genres: genreId.toString(),
     sort_by: "popularity.desc",
@@ -267,9 +376,9 @@ export async function getMoviesByGenre(genreId : number, page = 1) {
   const response = await fetch(
     `https://api.themoviedb.org/3/discover/movie?${params}`,
     {
-      method:'GET',
-      headers: TMDB_CONFIG.headers
-    }
+      method: "GET",
+      headers: TMDB_CONFIG.headers,
+    },
   );
 
   if (!response.ok) {

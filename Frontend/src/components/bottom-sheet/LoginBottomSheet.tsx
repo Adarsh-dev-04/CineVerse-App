@@ -19,7 +19,6 @@ type LoginBottomSheetProps = {
 const LoginBottomSheet = forwardRef<BottomSheetModal, LoginBottomSheetProps>(
   ({message,icon, onLogin, onSignup}, ref) => {
     const insets = useSafeAreaInsets();
-
     const snapPoints = useMemo(() => ["25%"], []);
 
     return (

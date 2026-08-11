@@ -36,7 +36,6 @@ const watchedMovies = getCollection("watched");
 const favoriteMovies = getCollection("favorite");
 const watchlistMovies = getCollection("watchlist");
   const [error, setError] = useState<Error | null>(null);
-
   const collectionConfig = [
     {
       key: "watched" as const,
@@ -59,7 +58,7 @@ const watchlistMovies = getCollection("watchlist");
   ];
 
   return (
-    <SafeAreaView className="flex-1 bg-[#030014]">
+    <SafeAreaView className="flex-1 bg-[#030014] pb-20">
       {loading ? (
         <ActivityIndicator size="large" />
       ) : error ? (

@@ -24,7 +24,7 @@ export default function RootLayout() {
   }, []);
   return (
     <>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureHandlerRootView style={{ flex: 1 ,backgroundColor: "#030014",}}>
         <SafeAreaProvider>
           <BottomSheetModalProvider>
             <BottomSheetProvider>
@@ -38,14 +38,13 @@ export default function RootLayout() {
                       contentStyle: {
                         backgroundColor: "#030014",
                       },
-                      animation: "slide_from_right",
+                      animation: 'fade',
                       animationDuration: 250,
                       animationTypeForReplace: "pop",
                     }}
                   >
                     <Stack.Screen name="(tabs)" />
                     <Stack.Screen name="movies/[id]" />
-                    <Stack.Screen name="genres/[id]" />
                     <Stack.Screen name="movie-interaction/[pageType]" />
                     <Stack.Screen name="pages/edit-profile" />
                     <Stack.Screen name="pages/preferences" />

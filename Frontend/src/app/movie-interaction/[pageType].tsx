@@ -14,7 +14,9 @@ import MovieCard from "@/components/common/MovieCard";
 import { icons } from "../../../constants/icons";
 import { Ionicons } from "@expo/vector-icons";
 import { AxiosResponse } from "axios";
-import { useLocalSearchParams } from "expo-router";
+import { Redirect, useLocalSearchParams } from "expo-router";
+import { CollectionType, useMovieInteraction } from "@/contexts/MovieInteractionContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 type Detail = {
   title: string;
@@ -23,9 +25,11 @@ type Detail = {
 };
 
 const favoritePage = () => {
+  const {user} = useAuth();
+  const {getCollection} = useMovieInteraction();
   const { pageType } = useLocalSearchParams();
   const [page, setPage] = useState(1);
-  const [data, setData] = useState(null);
+  const data= getCollection(pageType as CollectionType)
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -46,31 +50,11 @@ const favoritePage = () => {
       icon: "checkmark-done",
     },
   };
-
   const currentPageDetail = pageDetail[pageType as keyof typeof pageDetail];
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
 
-      const result = await getMovieInteractionByType({
-        type: pageType,
-        page: page,
-      });
-      setData(result.data?.movies);
-    } catch (err) {
-      //@ts-ignore
-
-      setError(
-        err instanceof Error ? err : new Error("An unknown error occurred"),
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
+  if(!user){
+   return <Redirect href='/(tabs)/profile'/>
+  }
 
   return (
     <View className="flex-1 bg-primary">
@@ -105,7 +89,14 @@ const favoritePage = () => {
           )}
           <FlatList
             data={data}
-            keyExtractor={(item) => item.tmdbId.toString()}
+            keyExtractor={(item) => item.id.toString()}
+            className="px-4 overflow-hidden"
+            numColumns={3}
+            columnWrapperStyle={{
+              justifyContent: "flex-start",
+              gap: 10,
+              marginBottom: 10,
+            }}
             renderItem={({ item }) => (
               <MovieCard
                 id={item.tmdbId}
@@ -116,13 +107,13 @@ const favoritePage = () => {
                 search="w-1/3"
               />
             )}
-            numColumns={3}
-            columnWrapperStyle={{
-              justifyContent: "flex-start",
-              gap: 10,
-              marginBottom: 10,
-            }}
-            className="px-4 overflow-hidden"
+            ListEmptyComponent={
+              <>
+                <View className="flex-1 items-center">
+                  <Text className="text-white text-xl font-semibold">You haven't saved any movie in your {currentPageDetail.title}</Text>
+                </View>
+              </>
+            }
           />
         </>
       )}

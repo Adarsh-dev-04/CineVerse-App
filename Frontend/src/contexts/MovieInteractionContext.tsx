@@ -31,7 +31,7 @@ type MovieInteractionContextType = {
 
   toggleInteraction: (movie: Movie, type: CollectionType) => Promise<void>;
 
-  getInteraction: (tmdbId: number) => MovieInteraction;
+  getInteraction: (id: number) => MovieInteraction;
 };
 
 const MovieInteractionContext =
@@ -72,9 +72,9 @@ export function MovieInteractionProvider({
     return response.data.movies ?? [];
   };
 
-  const getInteraction = (tmdbId: number): MovieInteraction => {
+  const getInteraction = (id: number): MovieInteraction => {
     return (
-      interactions[tmdbId] ?? {
+      interactions[id] ?? {
         favorite: false,
         watchlist: false,
         watched: false,
@@ -101,7 +101,7 @@ export function MovieInteractionProvider({
       const movieMap: Record<number, Movie> = {};
 
       [...favorite, ...watchlist, ...watched].forEach((movie) => {
-        movieMap[movie.tmdbId] = movie;
+        movieMap[movie.id] = movie;
       });
 
       setMovies(movieMap);
@@ -109,33 +109,33 @@ export function MovieInteractionProvider({
       const interactionMap: Record<number, MovieInteraction> = {};
 
       favorite.forEach((movie: any) => {
-        interactionMap[movie.tmdbId] ??= {
+        interactionMap[movie.id] ??= {
           favorite: false,
           watchlist: false,
           watched: false,
         };
 
-        interactionMap[movie.tmdbId].favorite = true;
+        interactionMap[movie.id].favorite = true;
       });
 
       watchlist.forEach((movie: any) => {
-        interactionMap[movie.tmdbId] ??= {
+        interactionMap[movie.id] ??= {
           favorite: false,
           watchlist: false,
           watched: false,
         };
 
-        interactionMap[movie.tmdbId].watchlist = true;
+        interactionMap[movie.id].watchlist = true;
       });
 
       watched.forEach((movie: any) => {
-        interactionMap[movie.tmdbId] ??= {
+        interactionMap[movie.id] ??= {
           favorite: false,
           watchlist: false,
           watched: false,
         };
 
-        interactionMap[movie.tmdbId].watched = true;
+        interactionMap[movie.id].watched = true;
       });
 
       setInteractions(interactionMap);
