@@ -4,7 +4,7 @@ import { icons } from '../../../constants/icons'
 
 const SearchBar = ({ onPress, placeholder, value, onChangeText }: { onPress: () => void; placeholder: string; value?: string; onChangeText?: (text: string) => void }) => {
   return (
-    <View className="flex-row items-center bg-dark-200 rounded-full px-5 mx-5 py-4">
+    <View className="flex-row items-center bg-dark-200 rounded-full px-5 mx-2 py-4">
       <Image source={icons.search} className="size-5" resizeMode='contain' tintColor="#AB8BFF" />
       <TextInput
         placeholder={placeholder}

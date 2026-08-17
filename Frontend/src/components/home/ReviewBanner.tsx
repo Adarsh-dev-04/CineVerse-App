@@ -5,10 +5,8 @@ import { Link, router } from "expo-router";
 
 const ReviewBanner = () => {
   return (
-      <Pressable
-        className="mt-8 overflow-hidden rounded-[28px] border  border-[#241C40] bg-[#090615] active:scale-[0.98] active:opacity-95"
-          onPress={() => router.push("/pages/rateReviewPage")}
-      >
+      <View
+        className="mt-8 overflow-hidden rounded-[28px] border  border-[#241C40] bg-[#090615]">
         {/* Background Glow */}
 
         <View
@@ -78,24 +76,12 @@ const ReviewBanner = () => {
         {/* CTA */}
 
         <Pressable
-          className="
-        absolute
-        bottom-5
-        right-5
-        h-12
-        w-12
-        items-center
-        justify-center
-        rounded-full
-        border
-        border-[#6F57D7]
-        bg-[#0E0A1A]
-        "
+          className="absolute bottom-5 right-5 h-12 w-12 items-center justify-center rounded-full border border-[#6F57D7] bg-[#0E0A1A] active:scale-0.95"
           onPress={() => router.push("/pages/rateReviewPage")}
         >
           <Ionicons name="arrow-forward" size={22} color="#AB8BFF" />
         </Pressable>
-      </Pressable>
+      </View>
 
   );
 };

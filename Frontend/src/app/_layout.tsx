@@ -49,6 +49,7 @@ export default function RootLayout() {
                     <Stack.Screen name="pages/edit-profile" />
                     <Stack.Screen name="pages/preferences" />
                     <Stack.Screen name="pages/rateReviewPage" />
+                    <Stack.Screen name="auth/verifyOtp" />
                   </Stack>
                 </MovieInteractionProvider>
               </AuthProvider>

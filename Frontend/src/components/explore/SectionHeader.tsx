@@ -17,7 +17,7 @@ const SectionHeader = ({ title, onPress }: Props) => {
         onPress={onPress}
         className="flex-row items-center"
       >
-        <Text className="mr-1 text-[15px] font-medium text-[#AB8BFF]">
+        {/* <Text className="mr-1 text-[15px] font-medium text-[#AB8BFF]">
           See All
         </Text>
 
@@ -25,7 +25,7 @@ const SectionHeader = ({ title, onPress }: Props) => {
           name="chevron-forward"
           size={16}
           color="#AB8BFF"
-        />
+        /> */}
       </Pressable>
     </View>
   );

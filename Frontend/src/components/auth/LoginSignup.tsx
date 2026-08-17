@@ -6,6 +6,7 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { useState } from "react";
 import { images } from "../../../constants/images";
@@ -19,6 +20,8 @@ import { ScrollView } from "react-native-gesture-handler";
 import PasswordInput from "./PasswordInput";
 import EmailInput from "./EmailInput";
 import InputBox from "./EmailInput";
+import axios from "axios";
+import { router } from "expo-router";
 
 type props = {
   mode: string | string[];
@@ -33,46 +36,98 @@ const Login = ({ mode, setMode, email, setEmail, name, setName }: props) => {
   const { login } = useAuth();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [passwordDiffer, setPasswordDiffer] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const [signupError, setSignupError] = useState("");
+
   async function handleLogin() {
+    setEmailError("");
+    setPasswordError("");
+    setFormError("");
+
     try {
-      const data = await loginUser(email, password);
-      await saveToken(data.token);
-      login(data.user, data.token);
+      setLoading(true);
+
+      const response = await loginUser(email, password);
+
+      await saveToken(response.data.token);
+      login(response.data.user, response.data.token);
     } catch (error) {
-      Alert.alert(
-        "Login failed",
-        error instanceof Error
-          ? error.message
-          : "Please check your connection and try again.",
-      );
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+        const message = error.response?.data?.message;
+
+        switch (status) {
+          case 404:
+            setEmailError("No account found with this email.");
+            break;
+
+          case 401:
+            setPasswordError("Incorrect password. Please try again.");
+            break;
+
+          case 400:
+            setFormError(message || "Please check your information.");
+            break;
+
+          default:
+            setFormError(message || "Something went wrong. Please try again.");
+        }
+      } else {
+        setFormError("Something went wrong. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   }
 
   async function handleSignup() {
-    if (password !== confirmPassword) {
-      setPasswordDiffer(true);
-      Alert.alert(
-        "Passwords do not match",
-        "Please make sure both passwords are the same.",
-      );
+    setSignupError("");
+
+    if (!name.trim()) {
+      setSignupError("Please enter your name.");
       return;
     }
 
-    setPasswordDiffer(false);
+    if (!email.trim()) {
+      setSignupError("Please enter your email.");
+      return;
+    }
+
+    if (!password) {
+      setSignupError("Please enter a password.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setSignupError("Passwords do not match.");
+      return;
+    }
 
     try {
+      setLoading(true);
+
       const data = await registerUser(name, email, password);
-      await saveToken(data.token);
-      login(data.user, data.token);
+      router.push({
+        pathname: "/auth/verifyOtp",
+        params: {
+          email: data.email,
+        },
+      });
     } catch (error) {
-      Alert.alert(
-        "Signup failed",
-        error instanceof Error
-          ? error.message
-          : "Please check your details and try again.",
-      );
+      if (axios.isAxiosError(error)) {
+        setSignupError(
+          error.response?.data?.message ||
+            "Unable to create your account. Please try again.",
+        );
+      } else {
+        setSignupError("Unable to connect to the server. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -127,8 +182,15 @@ const Login = ({ mode, setMode, email, setEmail, name, setName }: props) => {
                 placeholder="Enter your email"
                 type="email"
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={(value) => {
+                  setEmail(value);
+                  setEmailError("");
+                }}
               />
+
+              {emailError ? (
+                <Text className="text-red-400 text-sm mt-2">{emailError}</Text>
+              ) : null}
 
               <Text className="text-white/90 text-base mt-8 text-left">
                 Password
@@ -137,12 +199,22 @@ const Login = ({ mode, setMode, email, setEmail, name, setName }: props) => {
               <PasswordInput
                 placeholder="Enter your password"
                 value={password}
-                onChangeText={setPassword}
+                onChangeText={(value) => {
+                  setPassword(value);
+                  setPasswordError("");
+                }}
                 error={passwordError}
               />
               <Text className="text-accent mt-4 text-right">
                 Forgot Password?
               </Text>
+
+              {formError ? (
+                <View className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 mt-6">
+                  <Text className="text-red-400 text-sm">{formError}</Text>
+                </View>
+              ) : null}
+
               <TouchableOpacity onPress={handleLogin}>
                 <View className="w-full h-16 bg-accent rounded-xl overflow-hidden mt-8 items-center justify-center">
                   <ImageBackground
@@ -150,9 +222,13 @@ const Login = ({ mode, setMode, email, setEmail, name, setName }: props) => {
                     className="aboslute left-[-3] flex-row w-full h-auto items-center justify-center gap-2 py-5 px-3"
                     resizeMode="cover"
                   >
-                    <Text className="text-primary text-lg font-bold">
-                      Login
-                    </Text>
+                    {loading ? (
+                      <ActivityIndicator size={"large"} color={"#030014"} />
+                    ) : (
+                      <Text className="text-primary text-lg font-bold">
+                        Login
+                      </Text>
+                    )}
                   </ImageBackground>
                 </View>
               </TouchableOpacity>
@@ -219,7 +295,7 @@ const Login = ({ mode, setMode, email, setEmail, name, setName }: props) => {
 
                   <InputBox
                     placeholder="Enter your name"
-                    type={'name'}
+                    type={"name"}
                     value={name}
                     onChangeText={setName}
                   />
@@ -230,7 +306,7 @@ const Login = ({ mode, setMode, email, setEmail, name, setName }: props) => {
 
                   <InputBox
                     placeholder="Enter your email"
-                    type='email'
+                    type="email"
                     value={email}
                     onChangeText={setEmail}
                   />
@@ -252,19 +328,17 @@ const Login = ({ mode, setMode, email, setEmail, name, setName }: props) => {
 
                   <PasswordInput
                     placeholder="Confirm your password"
-                    value={password}
-                    onChangeText={setPassword}
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
                     error={passwordError}
                   />
-                  {passwordDiffer ? (
-                    <Text className="text-red-500 text-sm mt-2">
-                      * Passwords do not match
-                    </Text>
+                  {signupError ? (
+                    <View className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 mt-6">
+                      <Text className="text-red-400 text-sm">
+                        {signupError}
+                      </Text>
+                    </View>
                   ) : null}
-
-                  <Text className="text-accent mt-4 text-right">
-                    Forgot Password?
-                  </Text>
                   <TouchableOpacity onPress={handleSignup}>
                     <View className="w-full h-16 bg-accent rounded-xl mt-8 items-center justify-center overflow-hidden">
                       <ImageBackground
@@ -272,9 +346,13 @@ const Login = ({ mode, setMode, email, setEmail, name, setName }: props) => {
                         className="aboslute left-[-3] flex-row w-full h-auto items-center justify-center gap-2 py-5 px-3"
                         resizeMode="cover"
                       >
-                        <Text className="text-primary text-lg font-bold">
-                          Sign Up
-                        </Text>
+                        {loading ? (
+                          <ActivityIndicator size={"large"} color={"#030014"} />
+                        ) : (
+                          <Text className="text-primary text-lg font-bold">
+                            Sign Up
+                          </Text>
+                        )}
                       </ImageBackground>
                     </View>
                   </TouchableOpacity>

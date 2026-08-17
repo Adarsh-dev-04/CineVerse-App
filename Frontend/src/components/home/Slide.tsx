@@ -14,7 +14,7 @@ const Slide = ({ item }: { item: any }) => {
   return (
     <Link href={`/movies/${item.id}`} asChild>
       <TouchableOpacity style={{ width }}>
-        <View className="mx-5 rounded-2xl overflow-hidden">
+        <View className="mx-2 rounded-2xl overflow-hidden">
           <ImageBackground
             source={{
               uri: `https://image.tmdb.org/t/p/w780${item.backdrop_path}`,

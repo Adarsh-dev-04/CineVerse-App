@@ -5,6 +5,7 @@ const connectDB = require("./config/db");
 const helmet = require("helmet");
 const cors = require("cors");
 
+const testRoutes = require("./routes/testRoutes");
 const healtRoutes = require("./routes/healthRoutes");
 const authRoutes = require("./routes/authRoutes");
 const movieInteractionRoutes = require("./routes/movieInteractionRoutes");
@@ -17,6 +18,7 @@ app.use(helmet());
 app.use(express.json({ limit: "10kb" }));
 app.use(cors());
 
+app.use("/api/test", testRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/movie-interactions", movieInteractionRoutes);
 app.use("/api/health", healtRoutes);

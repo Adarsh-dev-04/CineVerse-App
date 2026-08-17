@@ -8,12 +8,12 @@
     "scheme": "movieapp",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/icon_idea2.pngn"
+      "icon": "./assets/icon_idea2.png"
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#030014",
-        "foregroundImage": "./assets/splashScreen.png"
+        "foregroundImage": "./assets/icon_idea2.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.anonymous.CineVerse"
@@ -28,7 +28,7 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#030014",
-          "image": "./assets/splashScreen.png",
+          "image": "./assets/icon_idea2.png",
           "imageWidth": 100
         }
       ],
@@ -43,7 +43,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "381382a6-ab34-459a-9d3b-4d49d490948d"
+        "projectId": "39d07bdb-f4f6-4e26-bd2a-ba6423723c9b"
       }
     },
     "owner": "adarsh-dev-04s-team"

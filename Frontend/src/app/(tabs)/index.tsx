@@ -19,7 +19,7 @@ import {
 import MovieCard from "@/components/common/MovieCard";
 import Slide from "@/components/home/Slide";
 import { fetchTopRatedMovies } from "../../../services/api";
-import { useEffect, useState, useRef} from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import { getToken } from "@/utils/tokenStorage";
@@ -31,7 +31,6 @@ export default function Index() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const router = useRouter();
-
 
   const {
     data: movies,
@@ -46,20 +45,17 @@ export default function Index() {
     error: nowplayingError,
   } = useFetch(() => fetchNowPlayingMovies(), true);
 
-
   const {
     data: topRated,
     loading: topRatedLoading,
     error: topRatedError,
   } = useFetch(() => fetchTopRatedMovies(), true);
 
-
   const {
     data: UpcomingMoviesData,
     loading: UpcomingLoading,
     error: UpcomingError,
   } = useFetch(() => UpcomingMovies(), true);
-
 
   useEffect(() => {
     let mounted = true;
@@ -80,7 +76,6 @@ export default function Index() {
     moviesError || nowplayingError || topRatedError || UpcomingError;
 
   const heroMovies = nowplayingMovies?.slice(0, 5) ?? [];
-
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev: number) => {
@@ -164,7 +159,7 @@ export default function Index() {
               bounces={false}
             />
 
-            <View className="px-5 mb-8">
+            <View className="mb-8 px-1">
               <Text className="text-white text-2xl font-semibold mb-4">
                 Popular Movies
               </Text>
@@ -178,7 +173,7 @@ export default function Index() {
               />
             </View>
 
-            <View className="px-5 mb-8">
+            <View className="px-1 mb-8">
               <Text className="text-white text-2xl font-bold mb-4">
                 Top Rated
               </Text>
@@ -192,20 +187,25 @@ export default function Index() {
               />
             </View>
 
-            <View className="px-5 mb-8">
-              <Text className="text-white text-2xl font-bold mb-4">
-                Upcoming Movies
-              </Text>
-              <FlatList
-                data={UpcomingMoviesData}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                bounces={false}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => <MovieCard {...item} />}
-              />
-            </View>
-            <View className="px-5 mb-8">
+            {
+              //@ts-ignore
+              UpcomingMoviesData?.length > 0 && (
+                <View className="px-5 mb-8">
+                  <Text className="text-white text-2xl font-bold mb-4">
+                    Upcoming Movies
+                  </Text>
+                  <FlatList
+                    data={UpcomingMoviesData}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    bounces={false}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item }) => <MovieCard {...item} />}
+                  />
+                </View>
+              )
+            }
+            <View className="px-5 mb-8 flex-1">
               <ReviewBanner />
             </View>
           </View>

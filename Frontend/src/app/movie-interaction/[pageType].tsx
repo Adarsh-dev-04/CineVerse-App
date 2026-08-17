@@ -99,7 +99,7 @@ const favoritePage = () => {
             }}
             renderItem={({ item }) => (
               <MovieCard
-                id={item.tmdbId}
+                id={item.id}
                 title={item.title}
                 poster_path={item.poster_path}
                 vote_average={item.vote_average}

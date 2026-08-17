@@ -64,13 +64,13 @@ const profile = () => {
               </View>
             </View>
             <View className="w-full px-5 mt-10">
-              <OptionButton title="Edit Profile" link="/pages/edit-profile">
+              {/* <OptionButton title="Edit Profile" link="/pages/edit-profile">
                 <MaterialCommunityIcons
                   name="account-edit"
                   size={24}
                   color="#A8B5DB"
                 />
-              </OptionButton>
+              </OptionButton> */}
 
               <OptionButton title="All Saved" link="/saved">
                 <MaterialIcons name="bookmark" size={24} color="#A8B5DB" />
@@ -101,9 +101,9 @@ const profile = () => {
                 <Ionicons name="heart" size={20} color={"#A8B5DB"} />
               </OptionButton>
 
-              <OptionButton title="Preferences" link="/pages/preferences">
+              {/* <OptionButton title="Preferences" link="/pages/preferences">
                 <Entypo name="sound-mix" size={24} color="#A8B5DB" />
-              </OptionButton>
+              </OptionButton> */}
 
               <TouchableOpacity
                 className="w-full h-16 bg-accent rounded-xl mt-4 items-center justify-center overflow-hidden"
@@ -136,7 +136,7 @@ type OptionButtonProps = {
 function OptionButton({ title, link, pageName, children }: OptionButtonProps) {
   return (
     <Link href={link as RelativePathString} asChild>
-      <TouchableOpacity className="w-full h-16 bg-[#0e1035] border border-gray-400/30 rounded-xl pl-4 flex-row items-start justify-start gap-4 mt-4">
+      <TouchableOpacity className="w-full h-16 bg-[#090615] border border-gray-400/30 rounded-xl pl-4 flex-row items-start justify-start gap-4 mt-4">
         <View className="h-full w-12 items-center justify-center">
           {children}
         </View>

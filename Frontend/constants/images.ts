@@ -4,7 +4,7 @@ import rankingGradient from "@/assets/images/rankingGradient.png";
 import loginBg from "@/assets/images/LoginBg.png";
 import signupBg from "@/assets/images/SignupBg.png";
 import reviewPhone from "@/assets/review-phone.png"
-import splashScreen from "@/assets/splashScreen.png";
+import splashScreen from "@/assets/splash-bg.png";
 
 export const images = {
   bg,
