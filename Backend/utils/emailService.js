@@ -1,28 +1,22 @@
-const nodemailer = require("nodemailer");
+const { google } = require("googleapis");
 
-const transporter = nodemailer.createTransport({
-  host: "192.178.158.109",
-  port: 587,
-  secure: false,
-  requireTLS: true,
+const oauth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+);
 
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
+oauth2Client.setCredentials({
+  refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+});
 
-  tls: {
-    servername: "smtp.gmail.com",
-  },
+const gmail = google.gmail({
+  version: "v1",
+  auth: oauth2Client,
 });
 
 const sendOTPEmail = async (to, otp) => {
-  const mailOptions = {
-    from: `"CineVerse" <${process.env.GMAIL_USER}>`,
-    to,
-    subject: "Your CineVerse Verification Code",
-
-    html: `
+  try {
+    const html = `
       <div style="
         font-family: Arial, sans-serif;
         max-width: 500px;
@@ -68,29 +62,43 @@ const sendOTPEmail = async (to, otp) => {
           — CineVerse Team
         </p>
       </div>
-    `,
-  };
+    `;
 
-  try {
-    const info = await transporter.sendMail(mailOptions);
+    const rawMessage = [
+      `From: "CineVerse" <${process.env.GMAIL_USER}>`,
+      `To: ${to}`,
+      "Subject: Your CineVerse Verification Code",
+      "MIME-Version: 1.0",
+      "Content-Type: text/html; charset=UTF-8",
+      "",
+      html,
+    ].join("\r\n");
 
-    console.log("OTP email sent:", info.messageId);
+    const encodedMessage = Buffer.from(rawMessage)
+      .toString("base64")
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
 
-    return info;
+    const response = await gmail.users.messages.send({
+      userId: "me",
+      requestBody: {
+        raw: encodedMessage,
+      },
+    });
+
+    console.log("========== GMAIL API EMAIL SENT ==========");
+    console.log("To:", to);
+    console.log("From:", process.env.GMAIL_USER);
+    console.log("Message ID:", response.data.id);
+    console.log("==========================================");
+
+    return response.data;
   } catch (error) {
-    console.error("[Gmail SMTP Error]:", error);
+    console.error("[Gmail API Error]:", error);
     throw error;
   }
 };
-
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("========== SMTP VERIFY FAILED ==========");
-    console.error(error);
-  } else {
-    console.log("========== SMTP READY ==========");
-  }
-});
 
 module.exports = {
   sendOTPEmail,

@@ -54,6 +54,11 @@ const registerUser = async (req, res) => {
 
     try {
       await sendOTPEmail(normalizedEmail, otp);
+      console.log("========== REGISTER RESPONSE ==========");
+      console.log("OTP email sent successfully");
+      console.log("Email:", normalizedEmail);
+      console.log("About to return 200 response");
+      console.log("=======================================");
     } catch (error) {
       await PendingRegistration.deleteOne({
         _id: pendingRegistration._id,

@@ -118,6 +118,18 @@ const Login = ({ mode, setMode, email, setEmail, name, setName }: props) => {
         },
       });
     } catch (error) {
+      console.log("========== SIGNUP ERROR ==========");
+      console.log("Error:", error);
+
+      if (axios.isAxiosError(error)) {
+        console.log("Status:", error.response?.status);
+        console.log("Response:", error.response?.data);
+        console.log("URL:", error.config?.url);
+        console.log("Method:", error.config?.method);
+      }
+
+      console.log("===================================");
+
       if (axios.isAxiosError(error)) {
         setSignupError(
           error.response?.data?.message ||
