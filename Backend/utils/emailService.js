@@ -1,15 +1,20 @@
 const nodemailer = require("nodemailer");
 
+const nodemailer = require("nodemailer");
+
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: "192.178.158.109",
   port: 587,
   secure: false,
   requireTLS: true,
 
-  family: 4,
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASSWORD,
+  },
+
+  tls: {
+    servername: "smtp.gmail.com",
   },
 });
 
@@ -79,6 +84,15 @@ const sendOTPEmail = async (to, otp) => {
     throw error;
   }
 };
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("========== SMTP VERIFY FAILED ==========");
+    console.error(error);
+  } else {
+    console.log("========== SMTP READY ==========");
+  }
+});
 
 module.exports = {
   sendOTPEmail,
